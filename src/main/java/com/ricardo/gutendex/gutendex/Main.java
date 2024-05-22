@@ -1,14 +1,17 @@
 package com.ricardo.gutendex.gutendex;
 
+import com.ricardo.gutendex.model.BooksData;
 import com.ricardo.gutendex.service.DataConverter;
 import com.ricardo.gutendex.service.RequestClient;
 
 public class Main {
-	public static void main() {
-		RequestClient client = new RequestClient("https://gutendex.com/");
-		DataConverter dataConverter = new DataConverter();
+	RequestClient client = new RequestClient("https://gutendex.com/");
+	DataConverter dataConverter = new DataConverter();
 
-		String books = client.get("books/");
-		System.out.println(books);
+	public void main() {
+		String result = this.client.get("books/");
+		BooksData data = dataConverter.getData(result, BooksData.class);
+		// System.out.println(result);
+		System.out.println(data);
 	}
 }
