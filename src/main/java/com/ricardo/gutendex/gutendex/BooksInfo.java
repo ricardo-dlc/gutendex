@@ -2,9 +2,12 @@ package com.ricardo.gutendex.gutendex;
 
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Comparator;
+import java.util.DoubleSummaryStatistics;
+import java.util.IntSummaryStatistics;
 
 import com.ricardo.gutendex.model.BooksData;
 import com.ricardo.gutendex.model.Book;
@@ -31,6 +34,16 @@ public class BooksInfo {
 				.limit(limit)
 				.map(b -> b.title())
 				.forEach(System.out::println);
+	}
+
+	public void summary() {
+		IntSummaryStatistics stats = this.data.books().stream()
+				.filter(b -> b.downloadCount() > 0)
+				.collect(Collectors.summarizingInt(Book::downloadCount));
+		System.out.println("Average downloads: " + stats.getAverage());
+		System.out.println("Max downloads: " + stats.getMax());
+		System.out.println("Min downloads: " + stats.getMin());
+		System.out.println("Total books evaluated: " + stats.getCount());
 	}
 
 	public void searchBook() throws UnsupportedEncodingException {
