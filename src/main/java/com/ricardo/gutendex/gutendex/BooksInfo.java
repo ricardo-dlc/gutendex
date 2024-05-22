@@ -1,11 +1,10 @@
 package com.ricardo.gutendex.gutendex;
 
 import java.util.Optional;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.Collections;
+import java.util.Scanner;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Comparator;
-import java.util.List;
 
 import com.ricardo.gutendex.model.BooksData;
 import com.ricardo.gutendex.model.Book;
@@ -16,6 +15,7 @@ public class BooksInfo {
 	RequestClient client = new RequestClient("https://gutendex.com/");
 	DataConverter dataConverter = new DataConverter();
 	BooksData data;
+	Scanner scanner = new Scanner(System.in);
 
 	public void init() {
 		String result = this.client.get("books/");
@@ -31,5 +31,21 @@ public class BooksInfo {
 				.limit(limit)
 				.map(b -> b.title())
 				.forEach(System.out::println);
+	}
+
+	public void searchBook() throws UnsupportedEncodingException {
+		System.out.print("Enter a book name to search: ");
+		String bookName = scanner.nextLine();
+		String result = this.client.get("books/?search=" + URLEncoder.encode(bookName, "UTF-8"));
+		BooksData data = dataConverter.getData(result, BooksData.class);
+
+		Optional<Book> book = data.books().stream().findFirst();
+
+		if (book.isPresent()) {
+			System.out.println("Book found!");
+			System.out.println(book.get());
+		} else {
+			System.out.println("Book not found");
+		}
 	}
 }

@@ -27,9 +27,8 @@ public class RequestClient {
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		String json = response.body();
-		System.out.println(response);
 		return json;
 	}
 }

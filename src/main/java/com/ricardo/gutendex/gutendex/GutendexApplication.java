@@ -14,8 +14,9 @@ public class GutendexApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		BooksInfo main = new BooksInfo();
-		main.init();
-		main.topNBooks(5);
+		// main.init();
+		// main.topNBooks(5);
+		main.searchBook();
 	}
 
 }
