@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Comparator;
-import java.util.DoubleSummaryStatistics;
 import java.util.IntSummaryStatistics;
 
 import com.ricardo.gutendex.model.BooksData;
@@ -60,5 +59,18 @@ public class BooksInfo {
 		} else {
 			System.out.println("Book not found");
 		}
+	}
+
+	public void searchBookBetweenYears() throws UnsupportedEncodingException {
+		System.out.print("Enter a start year: ");
+		Integer startYear = Integer.valueOf(scanner.nextLine());
+		System.out.print("Enter an end year: ");
+		Integer endYear = Integer.valueOf(scanner.nextLine());
+
+		String result = this.client
+				.get("books/?author_year_start=" + startYear + "&author_year_end=" + endYear);
+		BooksData searchResult = dataConverter.getData(result, BooksData.class);
+
+		searchResult.books().stream().map(b -> b.title()).forEach(System.out::println);
 	}
 }
