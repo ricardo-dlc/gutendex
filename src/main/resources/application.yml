@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: gutendex
+  config:
+    import: optional:secrets-config.properties
+  jpa:
+    show-sql: true
+    format-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+hibernate:
+  dialect: org.hibernate.dialect.HSQLDialect
