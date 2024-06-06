@@ -1,57 +1,62 @@
 package com.ricardo.gutendex.gutendex;
 
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.stream.Collectors;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Comparator;
-import java.util.IntSummaryStatistics;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ricardo.gutendex.model.BookDTO;
 import com.ricardo.gutendex.model.BooksData;
-import com.ricardo.gutendex.model.Book;
 import com.ricardo.gutendex.service.DataConverter;
 import com.ricardo.gutendex.service.RequestClient;
+import com.ricardo.gutendex.util.JsonUtils;
 
 public class BooksInfo {
 	RequestClient client = new RequestClient("https://gutendex.com/");
 	DataConverter dataConverter = new DataConverter();
-	BooksData data;
 	Scanner scanner = new Scanner(System.in);
 
-	public void init() {
-		String result = this.client.get("books/");
-		this.data = dataConverter.getData(result, BooksData.class);
-		// System.out.println(result);
-		// System.out.println(this.data);
+	public void showMenu() throws UnsupportedEncodingException, JsonProcessingException {
+		int option = -1;
+		while (option != 0) {
+			String menu = """
+					1. Search a book.
+
+					0. Exit
+					""";
+			System.out.println(menu);
+			try {
+				System.out.print("Your option: ");
+				option = scanner.nextInt();
+			} catch (Exception e) {
+				System.out.println("Invalid option!");
+				continue;
+			} finally {
+				scanner.nextLine();
+			}
+
+			switch (option) {
+				case 1:
+					searchBook();
+					break;
+				case 0:
+					System.out.println("Exiting...");
+					break;
+				default:
+					System.out.println("Unknown option.");
+					break;
+			}
+		}
 	}
 
-	public void topNBooks(int limit) {
-		System.out.println("Displaying the top " + limit + " books.");
-		this.data.books().stream()
-				.sorted(Comparator.comparing(Book::downloadCount).reversed())
-				.limit(limit)
-				.map(b -> b.title())
-				.forEach(System.out::println);
-	}
-
-	public void summary() {
-		IntSummaryStatistics stats = this.data.books().stream()
-				.filter(b -> b.downloadCount() > 0)
-				.collect(Collectors.summarizingInt(Book::downloadCount));
-		System.out.println("Average downloads: " + stats.getAverage());
-		System.out.println("Max downloads: " + stats.getMax());
-		System.out.println("Min downloads: " + stats.getMin());
-		System.out.println("Total books evaluated: " + stats.getCount());
-	}
-
-	public void searchBook() throws UnsupportedEncodingException {
+	public void searchBook() throws UnsupportedEncodingException, JsonProcessingException {
 		System.out.print("Enter a book name to search: ");
 		String bookName = scanner.nextLine();
 		String result = this.client.get("books/?search=" + URLEncoder.encode(bookName, "UTF-8"));
-		BooksData data = dataConverter.getData(result, BooksData.class);
-
-		Optional<Book> book = data.books().stream().findFirst();
+		List<BookDTO> books = JsonUtils.extractListFromJson(result, BookDTO.class, "results");
+		Optional<BookDTO> book = books.stream().findFirst();
 
 		if (book.isPresent()) {
 			System.out.println("Book found!");
@@ -61,16 +66,16 @@ public class BooksInfo {
 		}
 	}
 
-	public void searchBookBetweenYears() throws UnsupportedEncodingException {
-		System.out.print("Enter a start year: ");
-		Integer startYear = Integer.valueOf(scanner.nextLine());
-		System.out.print("Enter an end year: ");
-		Integer endYear = Integer.valueOf(scanner.nextLine());
+	// public void searchBookBetweenYears() throws UnsupportedEncodingException {
+	// 	System.out.print("Enter a start year: ");
+	// 	Integer startYear = Integer.valueOf(scanner.nextLine());
+	// 	System.out.print("Enter an end year: ");
+	// 	Integer endYear = Integer.valueOf(scanner.nextLine());
 
-		String result = this.client
-				.get("books/?author_year_start=" + startYear + "&author_year_end=" + endYear);
-		BooksData searchResult = dataConverter.getData(result, BooksData.class);
+	// 	String result = this.client
+	// 			.get("books/?author_year_start=" + startYear + "&author_year_end=" + endYear);
+	// 	BooksData searchResult = dataConverter.getData(result, BooksData.class);
 
-		searchResult.books().stream().map(b -> b.title()).forEach(System.out::println);
-	}
+	// 	searchResult.books().stream().map(b -> b.title()).forEach(System.out::println);
+	// }
 }
