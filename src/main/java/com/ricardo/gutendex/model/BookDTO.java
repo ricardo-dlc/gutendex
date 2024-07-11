@@ -8,9 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record BookDTO(
 		String title,
-		List<String> subjects,
-		List<Author> authors,
+		List<AuthorDTO> authors,
 		List<String> languages,
-		boolean copyright,
 		@JsonAlias("download_count") int downloadCount) {
+
 }
