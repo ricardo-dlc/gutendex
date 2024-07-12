@@ -2,27 +2,28 @@ package com.ricardo.gutendex.gutendex;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ricardo.gutendex.model.Book;
 import com.ricardo.gutendex.model.BookDTO;
-import com.ricardo.gutendex.model.BooksData;
-import com.ricardo.gutendex.service.DataConverter;
 import com.ricardo.gutendex.service.RequestClient;
 import com.ricardo.gutendex.util.JsonUtils;
 
 public class BooksInfo {
-	RequestClient client = new RequestClient("https://gutendex.com/");
-	DataConverter dataConverter = new DataConverter();
-	Scanner scanner = new Scanner(System.in);
+	private RequestClient client = new RequestClient("https://gutendex.com/");
+	private Scanner scanner = new Scanner(System.in);
+	private List<Book> books = new ArrayList<>();
 
 	public void showMenu() throws UnsupportedEncodingException, JsonProcessingException {
 		int option = -1;
 		while (option != 0) {
 			String menu = """
 					1. Search a book.
+					2. Show books.
 
 					0. Exit
 					""";
@@ -41,6 +42,9 @@ public class BooksInfo {
 				case 1:
 					searchBook();
 					break;
+				case 2:
+					showBooks();
+					break;
 				case 0:
 					System.out.println("Exiting...");
 					break;
@@ -55,27 +59,25 @@ public class BooksInfo {
 		System.out.print("Enter a book name to search: ");
 		String bookName = scanner.nextLine();
 		String result = this.client.get("books/?search=" + URLEncoder.encode(bookName, "UTF-8"));
-		List<BookDTO> books = JsonUtils.extractListFromJson(result, BookDTO.class, "results");
-		Optional<BookDTO> book = books.stream().findFirst();
+		List<BookDTO> booksResult = JsonUtils.extractListFromJson(result, BookDTO.class, "results");
+		Optional<BookDTO> bookData = booksResult.stream().findFirst();
 
-		if (book.isPresent()) {
+		if (bookData.isPresent()) {
 			System.out.println("Book found!");
-			System.out.println(book.get());
+			Book book = new Book(bookData.get());
+			books.add(book);
+			System.out.println(book);
 		} else {
 			System.out.println("Book not found");
 		}
 	}
 
-	// public void searchBookBetweenYears() throws UnsupportedEncodingException {
-	// 	System.out.print("Enter a start year: ");
-	// 	Integer startYear = Integer.valueOf(scanner.nextLine());
-	// 	System.out.print("Enter an end year: ");
-	// 	Integer endYear = Integer.valueOf(scanner.nextLine());
-
-	// 	String result = this.client
-	// 			.get("books/?author_year_start=" + startYear + "&author_year_end=" + endYear);
-	// 	BooksData searchResult = dataConverter.getData(result, BooksData.class);
-
-	// 	searchResult.books().stream().map(b -> b.title()).forEach(System.out::println);
-	// }
+	public void showBooks() {
+		if (!books.isEmpty()) {
+			System.out.println("The available books are:");
+			books.forEach(System.out::println);
+		} else {
+			System.out.println("No available books.");
+		}
+	}
 }
