@@ -1,7 +1,5 @@
 package com.ricardo.gutendex.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 import com.ricardo.gutendex.model.Author;
@@ -9,6 +7,8 @@ import com.ricardo.gutendex.model.Book;
 import com.ricardo.gutendex.model.BookDTO;
 import com.ricardo.gutendex.repository.AuthorRepository;
 import com.ricardo.gutendex.repository.BookRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class BookService {
@@ -21,6 +21,7 @@ public class BookService {
 		this.authorRepository = authorRepository;
 	}
 
+	@Transactional
 	public void save(BookDTO bookDTO) {
 		if (bookRepository.existsByTitle(bookDTO.title())
 				&& authorRepository.existsByName(bookDTO.authors().get(0).name())) {
@@ -35,8 +36,15 @@ public class BookService {
 		System.out.println(book);
 	}
 
-	public List<Book> getAllBooks() {
-		return bookRepository.findAll();
+	public void getAllBooks() {
+		var books = bookRepository.findAll();
+
+		if (books.isEmpty()) {
+			System.out.println("No books available");
+		} else {
+			System.out.println("Books available are:");
+			books.forEach(System.out::println);
+		}
 	}
 
 }

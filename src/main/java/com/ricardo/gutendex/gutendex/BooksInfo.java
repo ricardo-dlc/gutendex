@@ -10,11 +10,10 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ricardo.gutendex.model.BookDTO;
+import com.ricardo.gutendex.service.AuthorService;
 import com.ricardo.gutendex.service.BookService;
 import com.ricardo.gutendex.service.RequestClient;
 import com.ricardo.gutendex.util.JsonUtils;
-
-import jakarta.transaction.Transactional;
 
 @Component
 public class BooksInfo {
@@ -22,9 +21,11 @@ public class BooksInfo {
 	private Scanner scanner = new Scanner(System.in);
 
 	private BookService bookService;
+	private AuthorService authorService;
 
-	public BooksInfo(BookService bookService) {
+	public BooksInfo(BookService bookService, AuthorService authorService) {
 		this.bookService = bookService;
+		this.authorService = authorService;
 	}
 
 	public void showMenu() throws UnsupportedEncodingException, JsonProcessingException {
@@ -32,7 +33,8 @@ public class BooksInfo {
 		while (option != 0) {
 			String menu = """
 					1. Search a book.
-					2. Show books.
+					2. Display books.
+					3. Display authors.
 
 					0. Exit
 					""";
@@ -54,6 +56,9 @@ public class BooksInfo {
 				case 2:
 					showBooks();
 					break;
+				case 3:
+					showAuthors();
+					break;
 				case 0:
 					System.out.println("Exiting...");
 					break;
@@ -64,7 +69,6 @@ public class BooksInfo {
 		}
 	}
 
-	@Transactional
 	public void searchBook() throws UnsupportedEncodingException, JsonProcessingException {
 		System.out.print("Enter a book name to search: ");
 		String bookName = scanner.nextLine();
@@ -81,12 +85,10 @@ public class BooksInfo {
 	}
 
 	public void showBooks() {
-		var books = bookService.getAllBooks();
-		if (books.isEmpty()) {
-			System.out.println("No books available");
-		} else {
-			System.out.println("Books available are:");
-			books.forEach(System.out::println);
-		}
+		bookService.getAllBooks();
+	}
+
+	private void showAuthors() {
+		authorService.getAllAuthorsWithBooks();
 	}
 }
