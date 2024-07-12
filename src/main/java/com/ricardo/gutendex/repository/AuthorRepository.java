@@ -8,4 +8,6 @@ import com.ricardo.gutendex.model.Author;
 @Repository
 public interface AuthorRepository extends JpaRepository<Author, Long> {
 
+	boolean existsByName(String name);
+
 }
