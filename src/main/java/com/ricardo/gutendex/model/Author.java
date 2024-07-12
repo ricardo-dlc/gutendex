@@ -1,9 +1,23 @@
 package com.ricardo.gutendex.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "authors")
 public class Author {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	private String name;
 	private Integer birthYear;
 	private Integer deathYear;
+
+	public Author() {
+	}
 
 	public Author(AuthorDTO data) {
 		this.name = data.name();

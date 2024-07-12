@@ -2,21 +2,30 @@ package com.ricardo.gutendex.gutendex;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ricardo.gutendex.model.Book;
 import com.ricardo.gutendex.model.BookDTO;
+import com.ricardo.gutendex.service.BookService;
 import com.ricardo.gutendex.service.RequestClient;
 import com.ricardo.gutendex.util.JsonUtils;
 
+import jakarta.transaction.Transactional;
+
+@Component
 public class BooksInfo {
 	private RequestClient client = new RequestClient("https://gutendex.com/");
 	private Scanner scanner = new Scanner(System.in);
-	private List<Book> books = new ArrayList<>();
+
+	private BookService bookService;
+
+	public BooksInfo(BookService bookService) {
+		this.bookService = bookService;
+	}
 
 	public void showMenu() throws UnsupportedEncodingException, JsonProcessingException {
 		int option = -1;
@@ -55,6 +64,7 @@ public class BooksInfo {
 		}
 	}
 
+	@Transactional
 	public void searchBook() throws UnsupportedEncodingException, JsonProcessingException {
 		System.out.print("Enter a book name to search: ");
 		String bookName = scanner.nextLine();
@@ -64,20 +74,19 @@ public class BooksInfo {
 
 		if (bookData.isPresent()) {
 			System.out.println("Book found!");
-			Book book = new Book(bookData.get());
-			books.add(book);
-			System.out.println(book);
+			bookService.save(bookData.get());
 		} else {
 			System.out.println("Book not found");
 		}
 	}
 
 	public void showBooks() {
-		if (!books.isEmpty()) {
-			System.out.println("The available books are:");
-			books.forEach(System.out::println);
+		var books = bookService.getAllBooks();
+		if (books.isEmpty()) {
+			System.out.println("No books available");
 		} else {
-			System.out.println("No available books.");
+			System.out.println("Books available are:");
+			books.forEach(System.out::println);
 		}
 	}
 }

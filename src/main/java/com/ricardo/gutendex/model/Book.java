@@ -1,16 +1,37 @@
 package com.ricardo.gutendex.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "books")
 public class Book {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@Column(unique = true)
 	private String title;
-	private Author author;
 	private String language;
 	private Integer downloadCount;
 
-	public Book(BookDTO data) {
-		this.title = data.title();
-		this.author = new Author(data.authors().get(0));
-		this.language = data.languages().get(0);
-		this.downloadCount = data.downloadCount();
+	@ManyToOne
+	@JoinColumn(name = "author_id")
+	private Author author;
+
+	public Book() {
+	}
+
+	public Book(BookDTO bookDTO, Author author) {
+		this.title = bookDTO.title();
+		this.language = bookDTO.languages().get(0);
+		this.downloadCount = bookDTO.downloadCount();
+		this.author = author;
 	}
 
 	public String getTitle() {
