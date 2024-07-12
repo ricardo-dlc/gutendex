@@ -17,16 +17,29 @@ public class AuthorService {
 		this.authorRepository = authorRepository;
 	}
 
-	@Transactional
-	public void getAllAuthorsWithBooks() {
-		List<Author> authors = authorRepository.findAll();
+	private void getBooksFromAuthors(List<Author> authors) {
 		if (!authors.isEmpty()) {
 			for (Author author : authors) {
 				System.out.println("Author: " + author.getName());
-				author.getBooks().forEach(book -> System.out.println("\t- Book: " + book.getTitle()));
+				System.out.println("Birth Year: " + author.getBirthYear());
+				System.out.println("Death Year: " + author.getDeathYear());
+				System.out.println("Books: ");
+				author.getBooks().forEach(book -> System.out.println("    - " + book.getTitle()));
 			}
 		} else {
 			System.out.println("No authors found.");
 		}
+	}
+
+	@Transactional
+	public void getAllAuthorsWithBooks() {
+		List<Author> authors = authorRepository.findAll();
+		getBooksFromAuthors(authors);
+	}
+
+	@Transactional
+	public void getAliveAuthors(int year) {
+		List<Author> authors = authorRepository.findByDeathYearLessThanEqual(year);
+		getBooksFromAuthors(authors);
 	}
 }

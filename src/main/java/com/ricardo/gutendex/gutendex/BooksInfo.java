@@ -33,8 +33,9 @@ public class BooksInfo {
 		while (option != 0) {
 			String menu = """
 					1. Search a book.
-					2. Display books.
-					3. Display authors.
+					2. Display all books.
+					3. Display all authors.
+					4. Display alive authors before a year.
 
 					0. Exit
 					""";
@@ -58,6 +59,9 @@ public class BooksInfo {
 					break;
 				case 3:
 					showAuthors();
+					break;
+				case 4:
+					showAliveAuthors();
 					break;
 				case 0:
 					System.out.println("Exiting...");
@@ -90,5 +94,13 @@ public class BooksInfo {
 
 	private void showAuthors() {
 		authorService.getAllAuthorsWithBooks();
+	}
+
+	private void showAliveAuthors() {
+		System.out.print("Enter a year to search: ");
+		var year = scanner.nextInt();
+		scanner.nextLine();
+
+		authorService.getAliveAuthors(year);
 	}
 }

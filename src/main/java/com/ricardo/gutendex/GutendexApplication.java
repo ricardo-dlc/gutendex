@@ -22,7 +22,6 @@ public class GutendexApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		// BooksInfo booksInfo = new BooksInfo();
 		booksInfo.showMenu();
 	}
 
