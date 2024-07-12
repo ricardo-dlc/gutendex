@@ -36,6 +36,7 @@ public class BooksInfo {
 					2. Display all books.
 					3. Display all authors.
 					4. Display alive authors before a year.
+					5. Display books by language.
 
 					0. Exit
 					""";
@@ -62,6 +63,9 @@ public class BooksInfo {
 					break;
 				case 4:
 					showAliveAuthors();
+					break;
+				case 5:
+					showBooksByLanguage();
 					break;
 				case 0:
 					System.out.println("Exiting...");
@@ -102,5 +106,9 @@ public class BooksInfo {
 		scanner.nextLine();
 
 		authorService.getAliveAuthors(year);
+	}
+
+	private void showBooksByLanguage() {
+		bookService.getBooksByLanguage(scanner);
 	}
 }
