@@ -10,4 +10,6 @@ public interface AuthorRepository extends JpaRepository<Author, Long> {
 
 	boolean existsByName(String name);
 
+    Author getReferenceByName(String authorName);
+
 }

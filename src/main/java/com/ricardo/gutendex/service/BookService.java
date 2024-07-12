@@ -23,14 +23,21 @@ public class BookService {
 
 	@Transactional
 	public void save(BookDTO bookDTO) {
-		if (bookRepository.existsByTitle(bookDTO.title())
-				&& authorRepository.existsByName(bookDTO.authors().get(0).name())) {
+		var authorName = bookDTO.authors().get(0).name();
+		var authorExists = authorRepository.existsByName(authorName);
+		var bookExists = bookRepository.existsByTitle(bookDTO.title());
+		if (bookExists && authorExists) {
 			System.out.println("This book already exists.");
 			return;
 		}
 
-		Author author = new Author(bookDTO.authors().get(0));
-		authorRepository.save(author);
+		Author author;
+		if (authorExists) {
+			author = authorRepository.getReferenceByName(authorName);
+		} else {
+			author = new Author(bookDTO.authors().get(0));
+			authorRepository.save(author);
+		}
 		Book book = new Book(bookDTO, author);
 		bookRepository.save(book);
 		System.out.println(book);
